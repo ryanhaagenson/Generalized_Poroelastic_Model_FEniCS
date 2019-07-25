@@ -1,7 +1,7 @@
 # Generalized_Poroelastic_Model_FEniCS
 The model code for the poroelastic model assocaited with the article title "A generalized poroelastic model using FEniCS with insights into the Noordbergum effect" by Haagenson et al. published in Computers &amp; Geosciences.
 
-![Model Logo](/logo.png)
+![Model Logo](/Logo.png)
 
 # Associated Journal Article
 Haagenson, R., Rajaram, H., Allen, J., 2019. A generalized poroelastic model using FEniCS with insights into the Noordbergum effect. Computers & Geosciences. 
