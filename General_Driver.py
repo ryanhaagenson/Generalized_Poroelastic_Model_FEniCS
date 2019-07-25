@@ -1,4 +1,7 @@
 """
+GPMF
+
+A Generalized Poroelastic Model using FEniCS
 
 This is the driver code for the time and Picard loop of the fully-coupled
 poroelastic formulation. The driver calls the solver in parallel, which
