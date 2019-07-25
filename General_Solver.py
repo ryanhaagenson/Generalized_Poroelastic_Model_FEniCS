@@ -1,5 +1,9 @@
 """
 
+GPMF
+
+A Generalized Poroelastic Model using FEniCS
+
 This is the solver code for the fully-coupled poroelasticity formulation
 and reads in the required information from the driver script before solving 
 the three PDEs (conservation of mass, darcy's law, conservation of momentum)   
