@@ -5,19 +5,19 @@ GPMF
 A Generalized Poroelastic Model using FEniCS
 
 Code for a fully-coupled poroelastic formulation: This solves the three
-PDEs (conservation of mass, darcy's law, conservation of momentum) using 
-a Mixed Finite Element approach (i.e. a monolithic solve). The linear 
-model uses a constant fluid density and porosity. The nonlinear model uses 
-a d(phi)/dt porosity model to update porosity in each time step, which is 
+PDEs (conservation of mass, darcy's law, conservation of momentum) using
+a Mixed Finite Element approach (i.e. a monolithic solve). The linear
+model uses a constant fluid density and porosity. The nonlinear model uses
+a d(phi)/dt porosity model to update porosity in each time step, which is
 derived from solid continuity assuming small strains. Fluid density is also
 allowed to vary.
 
-Primary unkowns are considered to be perturbations from the litho- and 
-hydro-static conditions, as is common in poroelasticity. Pressure or 
-stress/strain dependent variables are related to either the perturbation 
+Primary unkowns are considered to be perturbations from the litho- and
+hydro-static conditions, as is common in poroelasticity. Pressure or
+stress/strain dependent variables are related to either the perturbation
 or the total value (i.e. perturbation + static condition).
 
-Refer to the User Guide for more information on each section of the code 
+Refer to the User Guide for more information on each section of the code
 below.
 
 """
@@ -31,9 +31,9 @@ from time import gmtime, strftime
 
 ufl.algorithms.apply_derivatives.CONDITIONAL_WORKAROUND = True
 
-if MPI.rank(mpi_comm_world()) == 0:
-    print "Start date and time:"
-    print strftime("%Y-%m-%d %H:%M:%S", gmtime())
+if MPI.rank(MPI.comm_world) == 0:
+    print( "Start date and time:")
+    print( strftime("%Y-%m-%d %H:%M:%S", gmtime()))
 
 ###########################################################################
 
@@ -43,19 +43,19 @@ Linear = 0
 Nonlinear = 1
 
 if Linear + Nonlinear != 1:
-    if MPI.rank(mpi_comm_world()) == 0:
-        print "You must choose a model type."
+    if MPI.rank(MPI.comm_world) == 0:
+        print("You must choose a model type.")
     quit()
 
 if Linear == 1:
-    if MPI.rank(mpi_comm_world()) == 0:
-        print "Running the Linear Poroelastic Model."
+    if MPI.rank(MPI.comm_world) == 0:
+        print("Running the Linear Poroelastic Model.")
     weight = Constant(0.0)
     linear_flag = 1
 
 if Nonlinear == 1:
-    if MPI.rank(mpi_comm_world()) == 0:
-        print "Running the Nonlinear Poroelastic Model."
+    if MPI.rank(MPI.comm_world) == 0:
+        print( "Running the Nonlinear Poroelastic Model.")
     weight = Constant(1.0)
     linear_flag = 0
 
@@ -78,7 +78,7 @@ nz = 1          # Number of cells in z-direction
 
 ######### MESHING #########################################################
 
-if MPI.rank(mpi_comm_world()) == 0:
+if MPI.rank(MPI.comm_world) == 0:
     print ('Building mesh...')
 mesh = BoxMesh(Point(x0,y0,z0),Point(x1,y1,z1),nx,ny,nz)
 
@@ -190,7 +190,7 @@ dt = tend/nsteps
 ### Initial Condition ###
 X_i = Expression(
         (
-            "0.0",       		# p    
+            "0.0",       		# p
             "0.0","0.0","0.0", 	# (q1, q2, q3)
             "0.0","0.0","0.0"  	# (us1, us2, us3)
         ),degree = 2)
@@ -247,56 +247,56 @@ bottom_boundary.mark(boundary_facet_function,5)
 top_boundary.mark(boundary_facet_function,6)
 
 def GetBoundaryConditions(t):
-    
+
     bcs = []
 
     # Left Boundary
     # # Flux Boundary (normal)
     # bcs.append(DirichletBC(W.sub(1), Constant((0.0,0.0,0.0)), \
-    #     boundary_facet_function, 1)) 
+    #     boundary_facet_function, 1))
     # # Displacement Boundary
     # bcs.append(DirichletBC(W.sub(2), Constant((0.0,0.0,0.0)), \
-    #     boundary_facet_function, 1)) 
+    #     boundary_facet_function, 1))
 
     # Right Boundary
     # # Flux Boundary (normal)
     # bcs.append(DirichletBC(W.sub(1), Constant((0.0,0.0,0.0)), \
-    #    boundary_facet_function, 2)) 
+    #    boundary_facet_function, 2))
     # # Displacement Boundary
     # bcs.append(DirichletBC(W.sub(2), Constant((0.0,0.0,0.0)), \
-    #    boundary_facet_function, 2)) 
+    #    boundary_facet_function, 2))
 
     # Back Boundary
     # # Flux Boundary (normal)
     # bcs.append(DirichletBC(W.sub(1), Constant((0.0,0.0,0.0)), \
-    #    boundary_facet_function, 3)) 
+    #    boundary_facet_function, 3))
     # # Displacement Boundary
     # bcs.append(DirichletBC(W.sub(2), Constant((0.0,0.0,0.0)), \
-    #    boundary_facet_function, 3)) 
+    #    boundary_facet_function, 3))
 
     # Front Boundary
     # # Flux Boundary (normal)
     # bcs.append(DirichletBC(W.sub(1), Constant((0.0,0.0,0.0)), \
-    #    boundary_facet_function, 4)) 
+    #    boundary_facet_function, 4))
     # # Displacement Boundary
     # bcs.append(DirichletBC(W.sub(2), Constant((0.0,0.0,0.0)), \
-    #    boundary_facet_function, 4)) 
+    #    boundary_facet_function, 4))
 
     # Bottom Boundary
     # # Flux Boundary (normal)
     # bcs.append(DirichletBC(W.sub(1), Constant((0.0,0.0,0.0)), \
-    #    boundary_facet_function, 5)) 
+    #    boundary_facet_function, 5))
     # # Displacement Boundary
     # bcs.append(DirichletBC(W.sub(2), Constant((0.0,0.0,0.0)), \
-    #    boundary_facet_function, 5)) 
+    #    boundary_facet_function, 5))
 
     # Top Boundary
     # # Flux Boundary (normal)
     # bcs.append(DirichletBC(W.sub(1), Constant((0.0,0.0,0.0)), \
-    #    boundary_facet_function, 6)) 
+    #    boundary_facet_function, 6))
     # # Displacement Boundary
     # bcs.append(DirichletBC(W.sub(2), Constant((0.0,0.0,0.0)), \
-    #    boundary_facet_function, 6)) 
+    #    boundary_facet_function, 6))
 
     return bcs
 
@@ -386,36 +386,36 @@ porosity_file = XDMFFile('General/porosity.xdmf')
 
 t = 0.0
 
-if MPI.rank(mpi_comm_world()) == 0:
+if MPI.rank(MPI.comm_world) == 0:
     print ('Starting Time Loop...')
 
 ### Time Loop ###
 for n in range(nsteps):
 
-    MPI.barrier(mpi_comm_world())
+    MPI.barrier(MPI.comm_world)
 
     t += dt
 
-    if MPI.rank(mpi_comm_world()) == 0:
-        print "###############"
-        print ""
-        print "NEW TIME STEP"
-        print "Time =", t
-        print ""
-        print np.round(t/tend*100.0,6),"% Complete"
+    if MPI.rank(MPI.comm_world) == 0:
+        print( "###############")
+        print( "")
+        print( "NEW TIME STEP")
+        print( "Time =", t)
+        print( "")
+        print( np.round(t/tend*100.0,6),"% Complete")
 
     ### Convergence criteria ###
     reltol = 1E-4			    # Relative error tolerance for Picard
-    rel_error_max_global = 9999	# Initialize relative error 
+    rel_error_max_global = 9999	# Initialize relative error
     max_iter = 100			    # Maximum Picard iterations
     omega = 1.0				    # Relaxation coefficient
 
     iter = 0
 
     if linear_flag == 0:
-        if MPI.rank(mpi_comm_world()) == 0:
-            print "Entering Picard Iteration:"
-            print ""
+        if MPI.rank(MPI.comm_world) == 0:
+            print ("Entering Picard Iteration:")
+            print ("")
 
     # Get boundary conditions for this time
     bcs = GetBoundaryConditions(t)
@@ -424,26 +424,26 @@ for n in range(nsteps):
     while (rel_error_max_global > reltol):
 
         if linear_flag == 0:
-            if MPI.rank(mpi_comm_world()) == 0:
-                print "ITERATE"
+            if MPI.rank(MPI.comm_world) == 0:
+                print ("ITERATE")
 
         iter += 1
 
         if linear_flag == 0:
-            if MPI.rank(mpi_comm_world()) == 0:
-                print "iteration = ", iter
-                print ""
+            if MPI.rank(MPI.comm_world) == 0:
+                print ("iteration = ", iter)
+                print ("")
 
         ### Solve ###
         X = LinearSolver(U,V,X_n,t,bcs)
 
-        if MPI.rank(mpi_comm_world()) == 0:
-            print ""
+        if MPI.rank(MPI.comm_world) == 0:
+            print( "")
 
         if linear_flag == 0:
-            if MPI.rank(mpi_comm_world()) == 0:
-                print "Solved for a new solution estimate."
-                print ""
+            if MPI.rank(MPI.comm_world) == 0:
+                print ("Solved for a new solution estimate.")
+                print ("")
 
         p, q, us = X.split(True)
         p_m, q_m, us_m = X_m.split(True)
@@ -453,41 +453,41 @@ for n in range(nsteps):
         if linear_flag == 1:
             rel_error_max_local = 0.0
         if linear_flag == 0:
-            if MPI.rank(mpi_comm_world()) == 0:
-                print "Evaluate for Convergence"
-                print "-------------"
+            if MPI.rank(MPI.comm_world) == 0:
+                print ("Evaluate for Convergence")
+                print ("-------------")
             cell_values_p = p.vector().get_local()
             cell_values_p_m = p_m.vector().get_local()
             rel_error_max_local = np.nanmax(np.divide(np.abs(cell_values_p \
                 - cell_values_p_m),np.abs(cell_values_p_m)))
 
         # Find the global maximum value of the relative error
-        rel_error_max_global = MPI.max(mpi_comm_world(),rel_error_max_local)
+        rel_error_max_global = MPI.max(MPI.comm_world,rel_error_max_local)
 
-        if MPI.rank(mpi_comm_world()) == 0:
-            print "Relative Error = ",rel_error_max_global
-            print "-------------"
-            print ""
+        if MPI.rank(MPI.comm_world) == 0:
+            print( "Relative Error = ",rel_error_max_global)
+            print( "-------------")
+            print ("")
 
         # Update estimate
         X_new = X_m + omega*(X - X_m)
         X_m.assign(X_new)
 
         if iter == max_iter:
-            if MPI.rank(mpi_comm_world()) == 0:
-                print "Maximum iterations met"
-                print "Solution doesn't converge"
+            if MPI.rank(MPI.comm_world) == 0:
+                print( "Maximum iterations met")
+                print( "Solution doesn't converge")
             quit()
 
     if linear_flag == 0:
-        if MPI.rank(mpi_comm_world()) == 0:
-            print "The solution has converged."
-            print "Total iterations = ", iter
-            print ""
-    
-    if MPI.rank(mpi_comm_world()) == 0:
-        print "Saving solutions."
-        print ""
+        if MPI.rank(MPI.comm_world) == 0:
+            print( "The solution has converged.")
+            print ("Total iterations = ", iter)
+            print ("")
+
+    if MPI.rank(MPI.comm_world) == 0:
+        print( "Saving solutions.")
+        print ("")
     pressure_file.write(p,t)
     flux_file.write(q,t)
     disp_file.write(us,t)
@@ -499,14 +499,14 @@ for n in range(nsteps):
     # Update solution at last time step
     X_n.assign(X)
     phi_n.assign(project(phi(alpha,us,p,beta_s,phi_0,phi_min,t),P))
-    if MPI.rank(mpi_comm_world()) == 0:
-        print "Just updated last solution."
-        print ""
-        print "###############"
-        print ""
+    if MPI.rank(MPI.comm_world) == 0:
+        print ("Just updated last solution.")
+        print ("")
+        print( "###############")
+        print( "")
 
 ###########################################################################
 
-if MPI.rank(mpi_comm_world()) == 0:
-    print "This code finished at"
-    print strftime("%Y-%m-%d %H:%M:%S", gmtime())
+if MPI.rank(MPI.comm_world) == 0:
+    print( "This code finished at")
+    print( strftime("%Y-%m-%d %H:%M:%S", gmtime()))
