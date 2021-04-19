@@ -70,9 +70,9 @@ y0 = 0.0        # Minimum y
 y1 = 1.0        # Maximum y
 z0 = 0.0        # Minimum z
 z1 = 1.0        # Maximum z
-nx = 1          # Number of cells in x-direction
-ny = 1          # Number of cells in y-direction
-nz = 1          # Number of cells in z-direction
+nx = 5          # Number of cells in x-direction
+ny = 5          # Number of cells in y-direction
+nz = 5          # Number of cells in z-direction
 
 ###########################################################################
 
@@ -506,7 +506,6 @@ for n in range(nsteps):
         print( "")
 
 ###########################################################################
-
 if MPI.rank(MPI.comm_world) == 0:
     print( "This code finished at")
     print( strftime("%Y-%m-%d %H:%M:%S", gmtime()))
